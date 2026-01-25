@@ -2,9 +2,11 @@ package com.eldmatix.CasbinDemo.config;
 
 import com.eldmatix.CasbinDemo.security.TenantContext;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 @Configuration
 public class HibernateConfig {
@@ -26,8 +28,15 @@ public class HibernateConfig {
     }
 
     @Bean
-    public HibernatePropertiesCustomizer hibernatePropertiesCustomizer(CurrentTenantIdentifierResolver resolver) {
-        // In Hibernate 6/7, we register the resolver
-        return hibernateProperties -> hibernateProperties.put("hibernate.tenant_identifier_resolver", resolver);
+    public BeanPostProcessor hibernatePropertiesCustomizer(CurrentTenantIdentifierResolver resolver) {
+        return new BeanPostProcessor() {
+            @Override
+            public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+                if (bean instanceof LocalContainerEntityManagerFactoryBean factory) {
+                    factory.getJpaPropertyMap().put("hibernate.tenant_identifier_resolver", resolver);
+                }
+                return bean;
+            }
+        };
     }
 }
