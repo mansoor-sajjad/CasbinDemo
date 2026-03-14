@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.controller;
+package com.trapexoid.eldmatix.controller;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

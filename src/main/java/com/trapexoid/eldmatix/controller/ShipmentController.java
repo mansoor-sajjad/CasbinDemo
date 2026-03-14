@@ -1,11 +1,12 @@
-package com.eldmatix.CasbinDemo.controller;
+package com.trapexoid.eldmatix.controller;
 
-import com.eldmatix.CasbinDemo.dto.ShipmentDto;
-import com.eldmatix.CasbinDemo.model.Shipment;
-import com.eldmatix.CasbinDemo.repository.ShipmentRepository;
-import com.eldmatix.CasbinDemo.security.AuthorizationGuard;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
+
+import com.trapexoid.eldmatix.dto.ShipmentDto;
+import com.trapexoid.eldmatix.model.Shipment;
+import com.trapexoid.eldmatix.repository.ShipmentRepository;
+import com.trapexoid.eldmatix.security.AuthorizationGuard;
 
 import java.util.List;
 import java.util.stream.Collectors;

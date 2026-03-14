@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.model;
+package com.trapexoid.eldmatix.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

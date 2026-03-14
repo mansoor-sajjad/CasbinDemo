@@ -8,10 +8,10 @@
 		<version>4.0.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.eldmatix</groupId>
-	<artifactId>CasbinDemo</artifactId>
+	<groupId>com.trapexoid</groupId>
+	<artifactId>eldmatix</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CasbinDemo</name>
+	<name>Eldmatix</name>
 	<description>Demo project for Spring Boot using Casbin</description>
 	<url/>
 	<licenses>

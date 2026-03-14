@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.security;
+package com.trapexoid.eldmatix.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.security;
+package com.trapexoid.eldmatix.security;
 
 import java.lang.ScopedValue;
 
