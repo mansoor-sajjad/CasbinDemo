@@ -24,8 +24,8 @@ WORKDIR /app
 # Copy the built jar file from the build stage
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose the application port
+# Expose the application port (for local reference)
 EXPOSE 8080
 
-# Run the application with preview features enabled as per pom.xml
-ENTRYPOINT ["java", "--enable-preview", "-jar", "app.jar"]
+# Run the application with preview features enabled, and assign the port provided by Render
+CMD ["sh", "-c", "java --enable-preview -jar app.jar --server.port=${PORT:-8080}"]
