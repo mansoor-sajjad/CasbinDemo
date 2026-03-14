@@ -1,13 +1,13 @@
-package com.eldmatix.CasbinDemo;
+package com.trapexoid.eldmatix;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CasbinDemoApplication {
+public class EldmatixApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CasbinDemoApplication.class, args);
+		SpringApplication.run(EldmatixApplication.class, args);
 	}
 
 }

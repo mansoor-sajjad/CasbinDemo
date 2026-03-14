@@ -1,12 +1,13 @@
-package com.eldmatix.CasbinDemo.config;
+package com.trapexoid.eldmatix.config;
 
-import com.eldmatix.CasbinDemo.security.TenantContext;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+
+import com.trapexoid.eldmatix.security.TenantContext;
 
 @Configuration
 public class HibernateConfig {

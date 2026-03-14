@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.security;
+package com.trapexoid.eldmatix.security;
 
 import org.casbin.jcasbin.main.Enforcer;
 import org.springframework.security.core.Authentication;

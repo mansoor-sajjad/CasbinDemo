@@ -1,6 +1,5 @@
-package com.eldmatix.CasbinDemo.config;
+package com.trapexoid.eldmatix.config;
 
-import com.eldmatix.CasbinDemo.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +7,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.trapexoid.eldmatix.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity

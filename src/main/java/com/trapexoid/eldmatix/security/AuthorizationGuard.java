@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.security;
+package com.trapexoid.eldmatix.security;
 
 @FunctionalInterface
 public interface AuthorizationGuard {

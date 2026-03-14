@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.config;
+package com.trapexoid.eldmatix.config;
 
 import org.casbin.adapter.JDBCAdapter;
 import org.casbin.jcasbin.main.Enforcer;

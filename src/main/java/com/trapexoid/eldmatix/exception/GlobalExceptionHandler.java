@@ -1,4 +1,4 @@
-package com.eldmatix.CasbinDemo.exception;
+package com.trapexoid.eldmatix.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
