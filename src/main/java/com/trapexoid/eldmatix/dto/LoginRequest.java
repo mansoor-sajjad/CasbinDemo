@@ -1,12 +1,14 @@
 package com.trapexoid.eldmatix.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequest {
 
-    @NotBlank(message = "Username cannot be blank")
-    @Email(message = "Username must be a valid email address")
+    @NotBlank(message = "Email cannot be blank")
+    @Email(message = "Must be a valid email address")
+    @JsonProperty("email")
     private String username;
 
     @NotBlank(message = "Password cannot be blank")
