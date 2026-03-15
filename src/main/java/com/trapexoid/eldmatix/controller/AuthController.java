@@ -1,5 +1,6 @@
 package com.trapexoid.eldmatix.controller;
 
+import com.trapexoid.eldmatix.dto.AuthResponse;
 import com.trapexoid.eldmatix.dto.LoginRequest;
 import com.trapexoid.eldmatix.model.User;
 import com.trapexoid.eldmatix.repository.UserRepository;
@@ -34,7 +35,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         // Authenticate the user
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -54,10 +55,13 @@ public class AuthController {
                         .signWith(Keys.hmacShaKeyFor(keyBytes))
                         .compact();
 
-                return ResponseEntity.ok(token);
+                AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(user.getUsername(), user.getTenantId());
+                AuthResponse response = new AuthResponse(token, userInfo);
+
+                return ResponseEntity.ok(response);
             }
         }
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
