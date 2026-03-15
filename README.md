@@ -3,14 +3,17 @@
 The application is running and Casbin is configured. You can manually verify access to the `/shipments` endpoint using `curl`.
 
 ## 1. Login to get a JWT
-Authenticate as `alice` in `tenant1` to receive a Bearer token.
+
+Send a `POST` request with a JSON body containing the user's email address and password. The `tenantId` is resolved automatically from the user's record in the database.
 
 ```bash
-curl -X POST "http://localhost:8080/auth/login?username=alice&tenantId=tenant1"
+curl -X POST "http://localhost:8080/api/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{"username": "alice@example.com", "password": "yourpassword"}'
 ```
 
 > [!NOTE]
-> For this demonstration, the `AuthController` issues a JWT without password validation. In a production system, you would include a `password` parameter and validate it against a user database.
+> The `username` field must be a valid email address. Authentication is performed against the database — both the email and password must match a stored user record.
 
 **Response:** You will receive a long JWT string (e.g., `eyJhbGciOi...`). Copy this token.
 
@@ -25,11 +28,12 @@ curl -X GET http://localhost:8080/shipments \
 **Response:**
 - **Success (200 OK):** Returns `[]` (empty list of shipments).
 - **Failure (403 Forbidden):** Returns `{"error": "Forbidden", ...}`.
+- **Failure (401 Unauthorized):** Returned when credentials are invalid.
 
 ## Current State
 A policy has been inserted into the database:
-- **User:** `alice`
-- **Tenant:** `tenant1`
+- **User:** `alice@example.com`
+- **Tenant:** `tenant1` (resolved from the user's DB record)
 - **Resource:** `shipment`
 - **Action:** `read`
 

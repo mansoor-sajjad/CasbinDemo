@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Value("${jwt.secret}")
