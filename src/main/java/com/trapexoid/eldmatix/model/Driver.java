@@ -4,15 +4,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
 import org.hibernate.annotations.TenantId;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity
 public class Driver {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, updatable = false, nullable = false)
+    private String referenceId = UUID.randomUUID().toString();
 
     private String firstName;
     private String lastName;
@@ -23,6 +28,8 @@ public class Driver {
     private String licenseState;
     private String licenseClass;
     private LocalDate licenseExpiry;
+
+    private boolean isActive = true;
 
     @TenantId
     private String tenantId;
@@ -49,6 +56,14 @@ public class Driver {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
     }
 
     public String getFirstName() {
@@ -129,5 +144,13 @@ public class Driver {
 
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
