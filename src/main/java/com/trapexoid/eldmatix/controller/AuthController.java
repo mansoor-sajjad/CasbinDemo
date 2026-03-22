@@ -1,33 +1,67 @@
 package com.trapexoid.eldmatix.controller;
 
+import com.trapexoid.eldmatix.dto.AuthResponse;
+import com.trapexoid.eldmatix.dto.LoginRequest;
+import com.trapexoid.eldmatix.model.User;
+import com.trapexoid.eldmatix.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Value("${jwt.secret}")
     private String secret;
 
+    private final AuthenticationManager authenticationManager;
+    private final UserRepository userRepository;
+
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+    }
+
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String tenantId) {
-        // In a real application, you would validate password here.
-        // For skeleton demonstration, we issue token for provided user/tenant.
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+        // Authenticate the user
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        if (authentication.isAuthenticated()) {
+            Optional<User> userOptional = userRepository.findByUsername(loginRequest.getUsername());
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
 
-        return Jwts.builder()
-                .subject(username)
-                .claim("tenantId", tenantId)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
-                .signWith(Keys.hmacShaKeyFor(keyBytes))
-                .compact();
+                byte[] keyBytes = Decoders.BASE64.decode(secret);
+
+                String token = Jwts.builder()
+                        .subject(user.getUsername())
+                        .claim("tenantId", user.getTenantId())
+                        .issuedAt(new Date())
+                        .expiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
+                        .signWith(Keys.hmacShaKeyFor(keyBytes))
+                        .compact();
+
+                AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(user.getUsername(), user.getTenantId());
+                AuthResponse response = new AuthResponse(token, userInfo);
+
+                return ResponseEntity.ok(response);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
