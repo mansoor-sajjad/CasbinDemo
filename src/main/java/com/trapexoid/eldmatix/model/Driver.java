@@ -29,6 +29,8 @@ public class Driver {
     private String licenseClass;
     private LocalDate licenseExpiry;
 
+    private boolean isActive = true;
+
     @TenantId
     private String tenantId;
 
@@ -142,5 +144,13 @@ public class Driver {
 
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
     }
 }
