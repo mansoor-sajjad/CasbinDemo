@@ -11,7 +11,7 @@ To access protected endpoints, you must first authenticate and obtain a JWT toke
 curl -X POST http://localhost:8080/api/auth/login \
      -H "Content-Type: application/json" \
      -d '{
-           "username": "your_username",
+           "email": "your_username",
            "password": "your_password"
          }'
 ```
