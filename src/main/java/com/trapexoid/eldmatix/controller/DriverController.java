@@ -79,8 +79,20 @@ public class DriverController {
         driver.setLicenseState(dto.licenseState());
         driver.setLicenseClass(dto.licenseClass());
         driver.setLicenseExpiry(dto.licenseExpiry());
-        driver.setActive(dto.isActive());
 
+        Driver updated = driverRepository.save(driver);
+        return convertToDto(updated);
+    }
+
+    @PatchMapping("/{referenceId}/status")
+    public DriverDto updateStatus(@PathVariable String referenceId, @RequestParam boolean active) {
+        if (!guard.allow("driver", "write")) {
+            throw new AccessDeniedException("Not allowed to write drivers");
+        }
+        Driver driver = driverRepository.findByReferenceId(referenceId)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+
+        driver.setActive(active);
         Driver updated = driverRepository.save(driver);
         return convertToDto(updated);
     }

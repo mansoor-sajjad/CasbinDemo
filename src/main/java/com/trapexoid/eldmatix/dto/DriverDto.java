@@ -14,5 +14,5 @@ public record DriverDto(
                 String licenseState,
                 String licenseClass,
                 LocalDate licenseExpiry,
-                boolean isActive) {
+                Boolean isActive) {
 }
