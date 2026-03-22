@@ -33,6 +33,16 @@ public class DriverController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/{referenceId}")
+    public DriverDto getByReferenceId(@PathVariable String referenceId) {
+        if (!guard.allow("driver", "read")) {
+            throw new AccessDeniedException("Not allowed to read drivers");
+        }
+        Driver driver = driverRepository.findByReferenceId(referenceId)
+                .orElseThrow(() -> new RuntimeException("Driver not found"));
+        return convertToDto(driver);
+    }
+
     @PostMapping
     public DriverDto create(@RequestBody DriverDto dto) {
         if (!guard.allow("driver", "write")) {
@@ -55,6 +65,7 @@ public class DriverController {
     private DriverDto convertToDto(Driver driver) {
         return new DriverDto(
                 driver.getId(),
+                driver.getReferenceId(),
                 driver.getFirstName(),
                 driver.getLastName(),
                 driver.getEmail(),
