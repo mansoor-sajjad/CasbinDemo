@@ -1,6 +1,7 @@
 package com.trapexoid.eldmatix.controller;
 
 import com.trapexoid.eldmatix.dto.AuthResponse;
+import com.trapexoid.eldmatix.dto.ErrorResponse;
 import com.trapexoid.eldmatix.dto.LoginRequest;
 import com.trapexoid.eldmatix.dto.SignupRequest;
 import com.trapexoid.eldmatix.model.User;
@@ -86,3 +87,4 @@ public class AuthController {
                     .body(new ErrorResponse("Registration failed", e.getMessage()));
         }
     }
+}
