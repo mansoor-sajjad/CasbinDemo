@@ -1,5 +1,7 @@
 package com.trapexoid.eldmatix.dto;
 
+import java.util.List;
+
 public class AuthResponse {
     private String token;
     private UserInfo user;
@@ -28,10 +30,17 @@ public class AuthResponse {
     public static class UserInfo {
         private String email;
         private String tenantId;
+        private List<String> roles;
 
         public UserInfo(String email, String tenantId) {
             this.email = email;
             this.tenantId = tenantId;
+        }
+
+        public UserInfo(String email, String tenantId, List<String> roles) {
+            this.email = email;
+            this.tenantId = tenantId;
+            this.roles = roles;
         }
 
         public String getEmail() {
@@ -48,6 +57,14 @@ public class AuthResponse {
 
         public void setTenantId(String tenantId) {
             this.tenantId = tenantId;
+        }
+
+        public List<String> getRoles() {
+            return roles;
+        }
+
+        public void setRoles(List<String> roles) {
+            this.roles = roles;
         }
     }
 }

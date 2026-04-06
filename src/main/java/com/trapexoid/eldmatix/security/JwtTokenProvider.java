@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.List;
 import java.util.function.Function;
 
 @Component
@@ -15,6 +16,9 @@ public class JwtTokenProvider {
 
     @Value("${jwt.secret}")
     private String secret;
+
+    @Value("${jwt.expiration:86400000}")
+    private long expiration; // Default 1 day in milliseconds
 
     private SecretKey getSignInKey() {
         // In a real app, ensure the secret is long enough for HMAC-SHA
@@ -28,6 +32,16 @@ public class JwtTokenProvider {
 
     public String extractTenantId(String token) {
         return extractClaim(token, claims -> claims.get("tenantId", String.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> extractRoles(String token) {
+        return extractClaim(token, claims -> (List<String>) claims.get("roles", List.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> extractPermissions(String token) {
+        return extractClaim(token, claims -> (List<String>) claims.get("permissions", List.class));
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {

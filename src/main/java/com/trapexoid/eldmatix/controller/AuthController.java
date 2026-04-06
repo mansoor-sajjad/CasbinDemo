@@ -2,6 +2,8 @@ package com.trapexoid.eldmatix.controller;
 
 import com.trapexoid.eldmatix.dto.AuthResponse;
 import com.trapexoid.eldmatix.dto.LoginRequest;
+import com.trapexoid.eldmatix.model.Permission;
+import com.trapexoid.eldmatix.model.Role;
 import com.trapexoid.eldmatix.model.User;
 import com.trapexoid.eldmatix.repository.UserRepository;
 import io.jsonwebtoken.Jwts;
@@ -17,7 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,6 +29,9 @@ public class AuthController {
 
     @Value("${jwt.secret}")
     private String secret;
+
+    @Value("${jwt.expiration:86400000}")
+    private long expiration;
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
@@ -45,17 +52,30 @@ public class AuthController {
             if (userOptional.isPresent()) {
                 User user = userOptional.get();
 
+                // Extract roles and permissions
+                List<String> roles = user.getRoles().stream()
+                        .map(Role::getName)
+                        .collect(Collectors.toList());
+
+                List<String> permissions = user.getRoles().stream()
+                        .flatMap(role -> role.getPermissions().stream())
+                        .map(Permission::getName)
+                        .distinct()
+                        .collect(Collectors.toList());
+
                 byte[] keyBytes = Decoders.BASE64.decode(secret);
 
                 String token = Jwts.builder()
                         .subject(user.getUsername())
                         .claim("tenantId", user.getTenantId())
+                        .claim("roles", roles)
+                        .claim("permissions", permissions)
                         .issuedAt(new Date())
-                        .expiration(new Date(System.currentTimeMillis() + 86400000)) // 1 day
+                        .expiration(new Date(System.currentTimeMillis() + expiration))
                         .signWith(Keys.hmacShaKeyFor(keyBytes))
                         .compact();
 
-                AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(user.getUsername(), user.getTenantId());
+                AuthResponse.UserInfo userInfo = new AuthResponse.UserInfo(user.getUsername(), user.getTenantId(), roles);
                 AuthResponse response = new AuthResponse(token, userInfo);
 
                 return ResponseEntity.ok(response);
