@@ -31,10 +31,8 @@ curl -X GET http://localhost:8080/shipments \
 - **Failure (401 Unauthorized):** Returned when credentials are invalid.
 
 ## Current State
-A policy has been inserted into the database:
-- **User:** `alice@example.com`
-- **Tenant:** `tenant1` (resolved from the user's DB record)
-- **Resource:** `shipment`
-- **Action:** `read`
+The database is seeded with role-based Casbin policies:
+- **User-role mapping:** `g, alice@example.com, ADMIN, DEFAULT`
+- **Role permissions:** `p, ADMIN, DEFAULT, shipment, read` and related ADMIN rules
 
-This allows `alice` to successfully access the GET `/shipments` endpoint.
+This allows `alice@example.com` to successfully access protected shipment and driver endpoints in the `DEFAULT` tenant.

@@ -65,31 +65,31 @@ All actual permissions are stored inside your PostgreSQL `casbin_rule` table. Th
 #### The `ptype` Column
 The `ptype` (Policy Type) determines whether a row acts as a direct permission (`p`) or a role assignment (`g`).
 
-#### 1. Direct Policies (`p`)
-Assigns an action on a resource to a user OR role within a specific tenant.
-- **Mapping:** `v0` (Subject), `v1` (Tenant), `v2` (Resource), `v3` (Action)
+#### 1. Role Permission Policies (`p`)
+Assigns an action on a resource to a role within a specific tenant.
+- **Mapping:** `v0` (Role), `v1` (Tenant), `v2` (Resource), `v3` (Action)
 - **Database Example:** 
-  `ptype='p', v0='testuser@example.com', v1='tenant1', v2='driver', v3='read'`
-  *(Result: testuser can read drivers in tenant1)*
+  `ptype='p', v0='ADMIN', v1='DEFAULT', v2='driver', v3='read'`
+  *(Result: the ADMIN role can read drivers in the DEFAULT tenant)*
 
 #### 2. Grouping / Role Assignments (`g`)
-Assigns a user to a specific role within a tenant domain. This prevents you from having to define `p` policies for every single user.
+Assigns a user to a specific role within a tenant domain.
 - **Mapping:** `v0` (User), `v1` (Role), `v2` (Tenant)
 - **Database Example:**
-  `ptype='g', v0='testuser@example.com', v1='admin', v2='tenant1'`
-  *(Result: testuser receives the 'admin' role in tenant1)*
+  `ptype='g', v0='alice@example.com', v1='ADMIN', v2='DEFAULT'`
+  *(Result: alice@example.com receives the ADMIN role in the DEFAULT tenant)*
 
 ### Recommended RBAC Strategy
 
 To keep your policies manageable as the application grows:
 
 1. **Define base permissions for roles (using `p`)**:
-   - `p, admin, tenant1, driver, read`
-   - `p, admin, tenant1, driver, write`
-   - `p, regular_user, tenant1, driver, read`
+   - `p, ADMIN, DEFAULT, driver, read`
+   - `p, ADMIN, DEFAULT, driver, write`
+   - `p, DRIVER, DEFAULT, driver, read`
 
 2. **Assign users directly to roles (using `g`)**:
-   - `g, new_employee@example.com, regular_user, tenant1`
-   - `g, manager@example.com, admin, tenant1`
+   - `g, driver@example.com, DRIVER, DEFAULT`
+   - `g, alice@example.com, ADMIN, DEFAULT`
 
-Casbin's dynamic matchers will evaluate the `g` mappings and automatically grant `manager@example.com` the right to `write` drivers!
+Casbin's matcher evaluates the `g` mappings and automatically grants `alice@example.com` the right to `write` drivers through the ADMIN role.
