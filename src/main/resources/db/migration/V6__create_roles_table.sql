@@ -5,8 +5,7 @@ CREATE TABLE roles (
     tenant_id VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (name, tenant_id),
-    CONSTRAINT fk_roles_tenant FOREIGN KEY (tenant_id) REFERENCES users(tenant_id)
+    UNIQUE (name, tenant_id)
 );
 
 CREATE INDEX idx_roles_tenant_id ON roles(tenant_id);

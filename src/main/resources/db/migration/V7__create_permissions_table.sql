@@ -7,8 +7,7 @@ CREATE TABLE permissions (
     tenant_id VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (name, tenant_id),
-    CONSTRAINT fk_permissions_tenant FOREIGN KEY (tenant_id) REFERENCES users(tenant_id)
+    UNIQUE (name, tenant_id)
 );
 
 CREATE INDEX idx_permissions_tenant_id ON permissions(tenant_id);
