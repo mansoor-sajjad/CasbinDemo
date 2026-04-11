@@ -1,6 +1,7 @@
 package com.trapexoid.eldmatix.config;
 
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -13,12 +14,11 @@ import com.trapexoid.eldmatix.security.TenantContext;
 public class HibernateConfig {
 
     @Bean
-    public CurrentTenantIdentifierResolver currentTenantIdentifierResolver() {
-        return new CurrentTenantIdentifierResolver() {
+    public CurrentTenantIdentifierResolver<String> currentTenantIdentifierResolver() {
+        return new CurrentTenantIdentifierResolver<>() {
             @Override
             public String resolveCurrentTenantIdentifier() {
-                String tenant = TenantContext.currentTenant();
-                return (tenant != null) ? tenant : "DEFAULT";
+                return TenantContext.optionalCurrentTenant().orElse("");
             }
 
             @Override
@@ -29,10 +29,10 @@ public class HibernateConfig {
     }
 
     @Bean
-    public BeanPostProcessor hibernatePropertiesCustomizer(CurrentTenantIdentifierResolver resolver) {
+    public BeanPostProcessor hibernatePropertiesCustomizer(CurrentTenantIdentifierResolver<String> resolver) {
         return new BeanPostProcessor() {
             @Override
-            public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+            public Object postProcessBeforeInitialization(@NonNull Object bean, @NonNull String beanName) throws BeansException {
                 if (bean instanceof LocalContainerEntityManagerFactoryBean factory) {
                     factory.getJpaPropertyMap().put("hibernate.tenant_identifier_resolver", resolver);
                 }

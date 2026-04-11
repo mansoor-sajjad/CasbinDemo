@@ -1,6 +1,7 @@
 package com.trapexoid.eldmatix.security;
 
 import java.lang.ScopedValue;
+import java.util.Optional;
 
 /**
  * Modern TenantContext using Java ScopedValue.
@@ -8,7 +9,21 @@ import java.lang.ScopedValue;
 public class TenantContext {
     public static final ScopedValue<String> TENANT_ID = ScopedValue.newInstance();
 
+    public static Optional<String> optionalCurrentTenant() {
+        if (!TENANT_ID.isBound()) {
+            return Optional.empty();
+        }
+
+        String tenantId = TENANT_ID.get();
+        if (tenantId == null || tenantId.isBlank()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(tenantId);
+    }
+
     public static String currentTenant() {
-        return TENANT_ID.isBound() ? TENANT_ID.get() : "DEFAULT";
+        return optionalCurrentTenant()
+                .orElseThrow(() -> new IllegalStateException("No tenant bound to the current request"));
     }
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -24,36 +25,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            @NonNull HttpServletResponse response,
+            @NonNull FilterChain filterChain
+    ) throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String username = null;
-        String tenantId = "DEFAULT";
-
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7);
-            if (tokenProvider.validateToken(token)) {
-                username = tokenProvider.extractUsername(token);
-                // Assume tenantId might be null if not present, use default
-                String extractedTenant = tokenProvider.extractTenantId(token);
-                if (extractedTenant != null) {
-                    tenantId = extractedTenant;
-                }
-
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        username, null, Collections.emptyList());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        final String finalTenantId = tenantId;
+        String token = authHeader.substring(7);
+        if (!tokenProvider.validateToken(token)) {
+            SecurityContextHolder.clearContext();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
+            return;
+        }
 
-        // Execute downstream chain within the scope
+        String username = tokenProvider.extractUsername(token);
+        String tenantId = tokenProvider.extractTenantId(token);
+
+        if (username == null || username.isBlank() || tenantId == null || tenantId.isBlank()) {
+            SecurityContextHolder.clearContext();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token is missing required claims");
+            return;
+        }
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                username, null, Collections.emptyList());
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         try {
-            ScopedValue.where(TenantContext.TENANT_ID, finalTenantId).run(() -> {
+            ScopedValue.where(TenantContext.TENANT_ID, tenantId).run(() -> {
                 try {
                     filterChain.doFilter(request, response);
                 } catch (Exception e) {
@@ -69,6 +75,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 throw e;
             }
+        } finally {
+            SecurityContextHolder.clearContext();
         }
     }
 }

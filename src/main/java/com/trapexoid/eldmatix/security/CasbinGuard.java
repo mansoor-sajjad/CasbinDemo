@@ -17,9 +17,15 @@ public class CasbinGuard implements AuthorizationGuard {
     @Override
     public boolean allow(String object, String action) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String sub = (auth != null && auth.isAuthenticated()) ? auth.getName() : "anonymous";
-        String dom = TenantContext.currentTenant();
+        if (auth == null || !auth.isAuthenticated()) {
+            return false;
+        }
 
-        return enforcer.enforce(sub, dom, object, action);
+        String dom = TenantContext.optionalCurrentTenant().orElse(null);
+        if (dom == null) {
+            return false;
+        }
+
+        return enforcer.enforce(auth.getName(), dom, object, action);
     }
 }
